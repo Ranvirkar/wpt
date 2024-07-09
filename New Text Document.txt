@@ -1,0 +1,512 @@
+namespace Studentwebapi.Entity
+{
+    public class Student
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }    
+        public string Email{ get; set; }
+        public string Mobile{ get; set; }
+        public string Address { get; set; }
+        public DateTime Admisssion_date { get; set; }
+        public double Fees {  get; set; }
+        public string Status { get; set; }
+    }
+}
+using Studentwebapi.Entity;
+
+namespace Studentwebapi.repository
+{
+    public interface istudentrepo
+    {
+        public List<Student> GetStudents();
+        public void deletebyid(int id);
+       
+         public Student searchbyid(int id);
+           public List<Student> sortbyname();
+        public void insert(Student student);
+
+        public void update(Student student);
+       public Student getstudentbyemailandphone(string email,string phone);
+        public void updatestudentdetails(string email,string phone);
+        
+
+
+
+
+    }
+}
+using MySql.Data.MySqlClient;
+using Mysqlx.Sql;
+using Studentwebapi.Entity;
+using System.Security.Cryptography.X509Certificates;
+
+namespace Studentwebapi.repository
+{
+    public class studentrepo : istudentrepo
+    {
+        string connectionstring = @"server=localhost;port=3306;user=root;password=root123;database=students;";
+        public List<Student> GetStudents()
+        {
+            List<Student> students = new List<Student>();
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            string query = "select *from student";
+            try
+
+            {
+                conn.Open();
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                MySqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    int id = int.Parse(reader["id"].ToString());
+                    string name = reader["name"].ToString();
+                    string email = reader["email"].ToString();
+                    string phone = reader["mobile_no"].ToString();
+                    string address = reader["address"].ToString();
+                    DateTime date = DateTime.Parse(reader["admission_date"].ToString());
+                    double fees = double.Parse(reader["fees"].ToString());
+                    string status = reader["status"].ToString();
+
+                    Student stud = new Student();
+                    stud.Id = id;
+                    stud.Name = name;
+                    stud.Email = email;
+                    stud.Mobile = phone;
+                    stud.Address = address;
+                    stud.Admisssion_date = date;
+                    stud.Fees = fees;
+                    stud.Status = status;
+
+                    students.Add(stud);
+
+
+                }
+                reader.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                if (conn.State != System.Data.ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
+            }
+            return students;
+        }
+        public void deletebyid(int id)
+        {
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            string query = "delete from student where id=" + id;
+            try
+
+            {
+                conn.Open();
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                if (conn.State != System.Data.ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
+            }
+        }
+        public Student searchbyid(int id)
+        {
+            Student stud = new Student();
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            string query = "select *from student where id=" + id;
+            try
+            {
+                conn.Open();
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    int id1 = int.Parse(reader["id"].ToString());
+                    string name = reader["name"].ToString();
+                    string email = reader["email"].ToString();
+                    string phone = reader["mobile_no"].ToString();
+                    string address = reader["address"].ToString();
+                    DateTime date = DateTime.Parse(reader["admission_date"].ToString());
+                    double fees = double.Parse(reader["fees"].ToString());
+                    string status = reader["status"].ToString();
+
+
+                    stud.Id = id1;
+                    stud.Name = name;
+                    stud.Email = email;
+                    stud.Mobile = phone;
+                    stud.Address = address;
+                    stud.Admisssion_date = date;
+                    stud.Fees = fees;
+                    stud.Status = status;
+
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+
+
+            }
+            finally
+            {
+                if (conn.State != System.Data.ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
+            }
+            return stud;
+        }
+        public List<Student> sortbyname()
+        {      List<Student> student=new List<Student> ();
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            string query = "select *from student order by name";
+            try
+
+            {
+                conn.Open();
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                MySqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    int id = int.Parse(reader["id"].ToString());
+                    string name = reader["name"].ToString();
+                    string email = reader["email"].ToString();
+                    string phone = reader["mobile_no"].ToString();
+                    string address = reader["address"].ToString();
+                    DateTime date = DateTime.Parse(reader["admission_date"].ToString());
+                    double fees = double.Parse(reader["fees"].ToString());
+                    string status = reader["status"].ToString();
+
+                    Student stud = new Student();
+                    stud.Id = id;
+                    stud.Name = name;
+                    stud.Email = email;
+                    stud.Mobile = phone;
+                    stud.Address = address;
+                    stud.Admisssion_date = date;
+                    stud.Fees = fees;
+                    stud.Status = status;
+
+                    student.Add(stud);
+
+
+                }
+                reader.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                if (conn.State != System.Data.ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
+            }
+
+            return student;
+        }
+        public void insert(Student student)
+        {
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            string query = "insert into student values(" + student.Id + " ,'" + student.Name + "','" + student.Email + "','" + student.Mobile + "','" + student.Address + "','" + student.Admisssion_date + "','" + student.Fees + "','" + student.Name + "' );";
+            try
+
+            {
+                conn.Open();
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                if (conn.State != System.Data.ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
+            }
+        }
+        public void update(Student student)
+        {
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            string query = "update student set name='" + student.Name + "',email='" + student.Email + "',mobile_no='" + student.Mobile + "', address='" + student.Address + "', admission_date='" + student.Admisssion_date + "',fees='" + student.Fees + "',status='" + student.Status + "'  where  id=" + student.Id;
+            try
+
+            {
+                conn.Open();
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                if (conn.State != System.Data.ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
+            }
+        }
+        public Student getstudentbyemailandphone(string email, string phone)
+        {
+            Console.WriteLine("email" + email + "phone" + phone + "in repo");
+            Student stud = new Student();
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            string query = "select *from student where email='" + email + "' and mobile_no='" + phone + "';";
+            try
+            {
+                conn.Open();
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    int id1 = int.Parse(reader["id"].ToString());
+                    string name = reader["name"].ToString();
+                    string email1 = reader["email"].ToString();
+                    string phone1 = reader["mobile_no"].ToString();
+                    string address = reader["address"].ToString();
+                    DateTime date = DateTime.Parse(reader["admission_date"].ToString());
+                    double fees = double.Parse(reader["fees"].ToString());
+                    string status = reader["status"].ToString();
+
+
+                    stud.Id = id1;
+                    stud.Name = name;
+                    stud.Email = email1;
+                    stud.Mobile = phone1;
+                    stud.Address = address;
+                    stud.Admisssion_date = date;
+                    stud.Fees = fees;
+                    stud.Status = status;
+
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+
+
+            }
+            finally
+            {
+                if (conn.State != System.Data.ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
+            }
+            Console.WriteLine("name="+stud.Name);
+            return stud; 
+        }
+       public void updatestudentdetails(string email,string phone)
+        {
+            Console.WriteLine("in the update method ");
+          Student student =new Student();
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            string query = "select *from student where email='" + email + "' and mobile_no='" + phone + "';";
+            try
+
+            {
+                conn.Open();
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                MySqlDataReader reader = cmd.ExecuteReader();
+                if(reader.Read()) 
+                {
+                  string query1="update student set name='" + student.Name + "',email='" + student.Email + "',mobile_no='" + student.Mobile + "', address='" + student.Address + "',status='" + student.Status + "'  where email='" + student.Email + "' and mobile_no='" + student.Mobile + "';";
+                    cmd.ExecuteNonQuery();
+                }
+                else
+                {
+                    Console.WriteLine(" data does not exist");                }
+             
+                Console.WriteLine(" after the executeupdate method ");
+ 
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                if (conn.State != System.Data.ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
+            }
+            Console.WriteLine("hey there she go");
+        }
+    }
+}
+using Studentwebapi.Entity;
+
+namespace Studentwebapi.service
+{
+    public interface istudentservice
+    {
+        public List<Student> GetStudents();
+        public void deletebyid(int id);
+        public Student searchbyid(int id);
+        public List<Student> sortbyname();
+        public void insert(Student student);
+        public void update(Student student);
+        public Student getstudentbyemailandphone(string email, string phone);
+        public void updatestudentdetails(string email,string phone);
+        /*        public void insert(Student student);
+               
+
+                public void update(Student student);
+                public void deletebyid(int id);
+                public void sortbyname();*/
+    }
+}
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using Studentwebapi.Entity;
+using Studentwebapi.repository;
+
+namespace Studentwebapi.service
+{
+    public class studentservice:istudentservice
+    {
+        public List<Student> GetStudents()
+        {
+        List<Student> student=new List<Student>();
+        studentrepo repo=new studentrepo();
+       student=repo.GetStudents();
+            return student;
+        }
+        public void deletebyid(int id)
+        {
+            studentrepo repo=new studentrepo();
+            repo.deletebyid(id);
+        }
+        public Student searchbyid(int id)
+        {
+            studentrepo repo=new studentrepo();
+           return repo.searchbyid(id);
+        }
+        public List<Student> sortbyname()
+        {
+            studentrepo repo=new studentrepo();
+            List<Student> student=repo.sortbyname();
+            return student;
+        }
+        public void insert(Student student)
+        {
+            studentrepo repo=new studentrepo();
+            repo.insert(student);
+        }
+        public void update(Student student)
+        {
+            studentrepo repo=new studentrepo();
+            repo.update(student);
+        }
+       public Student getstudentbyemailandphone(string email, string phone)
+        {
+            Console.WriteLine("email" + email + "phone" + phone + "in service");
+            studentrepo repo= new studentrepo();
+            return repo.getstudentbyemailandphone(email, phone);
+        }
+        public void updatestudentdetails(string email,string phone)
+        {
+            studentrepo repo=new studentrepo();
+            repo.updatestudentdetails(email, phone);
+        }
+
+        //return repo.getstudentbyemailandphone(email,phone);
+    }
+
+        /*  public void insert(Student student);
+          
+
+          public void update(Student student);
+
+          public void sortbyname();*/
+    using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Studentwebapi.service;
+using Studentwebapi.Entity;
+
+namespace Studentwebapi.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class StudentController : ControllerBase
+    {
+        public istudentservice service;
+        public StudentController(istudentservice service)
+        {
+            this.service = service;
+        }
+        [HttpGet]
+        public IActionResult getall()
+        {
+            List<Student> list = service.GetStudents();
+            return Ok(list);
+        }
+        [HttpDelete]
+        public void delete(int id)
+        {
+            service.deletebyid(id);
+        }
+        [HttpGet]
+        [Route("shop/abc")]
+        public IActionResult get(int id)
+        {
+            Student student = service.searchbyid(id);
+            return Ok(student);
+        }
+        [HttpGet]
+        [Route("shop")]
+        public IActionResult sortbyname()
+        {
+            return Ok(service.sortbyname());
+        }
+        [HttpPost]
+        public void insert(Student student)
+        {
+            service.insert(student);
+        }
+        [HttpPut]
+        public void update(Student student)
+        {
+            service.update(student);
+        }
+        [HttpGet]
+        [Route("shop/abcpqr")]
+
+
+        public IActionResult getstudentbyemailandphone(string email, string phone)
+        {
+            Console.WriteLine("email" + email + "phone" + phone + "in controller");
+            return Ok(service.getstudentbyemailandphone(email, phone));
+        }
+        [HttpPut]
+        [Route("abc")]
+            public void updatestudentdetails(string email,string phone)
+        {
+            service.updatestudentdetails(email,phone);
+        }
+    }
+}
+
