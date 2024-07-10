@@ -1,0 +1,15 @@
+create database employee;
+
+use employee;
+
+CREATE TABLE Employee (
+    id INT,
+    name VARCHAR(255),
+    reg_date DATE,
+    address VARCHAR(255), 
+    mob_num VARCHAR(255),
+    email VARCHAR(255),
+    password VARCHAR(255)
+);
+
+insert into Employee values(1,'gaurav','1996-12-12','nagpur','8898755','hellogmail','system12');
